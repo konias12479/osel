@@ -193,7 +193,7 @@
     <span style="font-size:22px">🧮</span>
   </div>
   <div class="modes">
-    <button class="mode" data-mode="klasik"><span class="ic">🏆</span><div><b>Klasická hra</b><span>15 otázek od rozcvičky po zabijáky. Přežiješ všechny?</span></div></button>
+    <button class="mode" data-mode="klasik"><span class="ic">🏆</span><div><b>Klasická hra</b><span>20 otázek od rozcvičky po zabijáky. Přežiješ všechny?</span></div></button>
     <button class="mode" data-mode="duel"><span class="ic">⚡</span><div><b>Rychlý duel</b><span>60 sekund. Kolik toho stihneš?</span></div></button>
     <button class="mode" data-mode="osel"><span class="ic">🫏</span><div><b>Osel mód</b><span>Směšně lehké otázky. Kalkulátor se ti směje.</span></div></button>
     <button class="mode" data-mode="kalkulator"><span class="ic">🧮</span><div><b>Kalkulátor mód</b><span>Jen tříhvězdičkové otázky. Dvojnásobné XP.</span></div></button>
@@ -1494,7 +1494,7 @@ let G=null, timerInt=null;
 function buildDeck(mode){
   const base=QUESTIONS.filter(x=>mixCustom||(x.k!=="Vlastní"&&x.k!=="Pro Tátu")); // speciální sady jen ve svých módech
   const d1=shuffle(base.filter(x=>x.d===1)), d2=shuffle(base.filter(x=>x.d===2)), d3=shuffle(base.filter(x=>x.d===3));
-  if(mode==="klasik") return [...d1.slice(0,1),...d2.slice(0,5),...d3.slice(0,9)];
+  if(mode==="klasik") return [...d1.slice(0,1),...d2.slice(0,6),...d3.slice(0,13)];
   if(mode==="osel") return d1.slice(0,10);
   if(mode==="kalkulator") return d3.slice(0,12);
   if(mode==="legendy") return shuffle(base.filter(x=>x.cz&&x.d>=2)).slice(0,15);
@@ -1515,7 +1515,7 @@ function startGame(mode){
   const c=ac(); if(c&&c.state==="suspended")c.resume();
   const deck=buildDeck(mode);
   G={mode,deck,i:0,score:0,streak:0,best:0,jokerUsed:false,
-     total:mode==="duel"?Infinity:(mode==="vlastni"||mode==="tata"?deck.length:(mode==="klasik"||mode==="legendy"?15:(mode==="kalkulator"?12:10))),
+     total:mode==="duel"?Infinity:(mode==="vlastni"||mode==="tata"?deck.length:(mode==="klasik"?20:(mode==="legendy"?15:(mode==="kalkulator"?12:10)))),
      timeLeft:MODES[mode].time, answered:0};
   $("jokerBtn").disabled=false;
   showScreen("game");
