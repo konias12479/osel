@@ -80,6 +80,10 @@
     border:2px solid var(--neon-gold);border-radius:10px;overflow:hidden;background:#000;
     box-shadow:0 0 16px rgba(255,207,63,.45)}
   #musicBox iframe{width:100%;height:100%;border:0}
+  #musicBox.mini{width:78px;height:42px}
+  #musicMini{position:absolute;top:2px;right:2px;z-index:2;background:rgba(0,0,0,.75);
+    border:1px solid var(--neon-gold);color:var(--neon-gold);border-radius:6px;
+    font-size:11px;padding:1px 7px;cursor:pointer;font-family:inherit}
 
   /* ====== HRA ====== */
   #game{padding:0}
@@ -1833,30 +1837,47 @@ $("mixBtn").addEventListener("click",()=>{
   mixCustom=!mixCustom;store.mix=mixCustom;save();refreshMixBtn();
 });
 
-/* ===== HUDBA — Baba Yetu (oficiální video Christophera Tina z YouTube) ===== */
-let musicOn=false;
+/* ===== HUDBA: vypnuto → Baba Yetu (YouTube okno) → vestavěná bez okna ===== */
+let bgmTimer=null,bgmStep=0;
+const BGM_CHORDS=[[220,261.63,329.63],[174.61,220,261.63],[130.81,196,261.63],[196,246.94,293.66]];
+function bgmTick(){ // jemný ambientní podkres přes Web Audio — žádné okno
+  const ch=BGM_CHORDS[Math.floor(bgmStep/4)%BGM_CHORDS.length];
+  tone(ch[0]/2,1.0,"sine",.055);
+  ch.forEach(f=>tone(f,1.7,"triangle",.028));
+  tone(ch[bgmStep%3]*2,.25,"sine",.045,.08);
+  if(bgmStep%4===3)tone(ch[2]*2,.3,"sine",.03,.45);
+  bgmStep++;
+}
+function startBgm(){const c=ac();if(c&&c.state==="suspended")c.resume();stopBgm();bgmTick();bgmTimer=setInterval(bgmTick,850);}
+function stopBgm(){clearInterval(bgmTimer);bgmTimer=null;}
+let musicMode=0;
+const MUSIC_LABELS=["🎵 Hudba: vypnutá","🎵 Hudba: Baba Yetu (YouTube okno)","🎵 Hudba: vestavěná — bez okna"];
 $("musicBtn").addEventListener("click",()=>{
-  musicOn=!musicOn;
+  musicMode=(musicMode+1)%3;
   const box=$("musicBox");
-  if(musicOn){
-    if(!box.firstChild){
-      if(location.protocol==="file:"){ // lokálně YouTube embed nefunguje (chyba 153)
-        box.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:10px;text-align:center">'+
-          '<a href="https://www.youtube.com/watch?v=IJiHDmyhE1A" target="_blank" rel="noopener" '+
-          'style="color:#ffcf3f;font-size:13px;font-weight:700;text-decoration:none;line-height:1.4">▶ Pustit Baba Yetu<br>na YouTube (nová záložka)<br><span style="font-size:10px;color:#9c94d8">Přehrávač ve hře funguje až na webu (GitHub Pages)</span></a></div>';
-      }else{
-        const f=document.createElement("iframe");
-        f.allow="autoplay; encrypted-media";
-        f.src="https://www.youtube.com/embed/IJiHDmyhE1A?autoplay=1&loop=1&playlist=IJiHDmyhE1A";
-        box.appendChild(f);
-      }
+  stopBgm();box.style.display="none";box.innerHTML="";box.classList.remove("mini");
+  if(musicMode===1){
+    if(location.protocol==="file:"){ // lokálně YouTube embed nefunguje
+      box.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:10px;text-align:center">'+
+        '<a href="https://www.youtube.com/watch?v=IJiHDmyhE1A" target="_blank" rel="noopener" '+
+        'style="color:#ffcf3f;font-size:13px;font-weight:700;text-decoration:none;line-height:1.4">▶ Pustit Baba Yetu<br>na YouTube (nová záložka)</a></div>';
+    }else{
+      const f=document.createElement("iframe");
+      f.allow="autoplay; encrypted-media";
+      f.src="https://www.youtube.com/embed/IJiHDmyhE1A?autoplay=1&loop=1&playlist=IJiHDmyhE1A";
+      box.appendChild(f);
+      const mini=document.createElement("button"); // zmenšení okna, hudba hraje dál
+      mini.id="musicMini";mini.textContent="🗕";
+      mini.addEventListener("click",e=>{e.stopPropagation();
+        box.classList.toggle("mini");
+        mini.textContent=box.classList.contains("mini")?"🗖":"🗕";});
+      box.appendChild(mini);
     }
     box.style.display="block";
-  }else{
-    box.style.display="none";
-    box.innerHTML=""; // zastaví přehrávání
+  }else if(musicMode===2){
+    startBgm();
   }
-  $("musicBtn").textContent=musicOn?"🎵 Hudba — Baba Yetu: hraje":"🎵 Hudba — Baba Yetu: vypnutá";
+  $("musicBtn").textContent=MUSIC_LABELS[musicMode];
 });
 refreshMenuBar();
 
