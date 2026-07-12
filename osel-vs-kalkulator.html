@@ -1481,6 +1481,11 @@ function speak(txt,chance=1){
   }catch(e){stopTalking()}
 }
 if(window.speechSynthesis)speechSynthesis.getVoices(); // předehřátí hlasů
+function explainWhenQuiet(x){ // nech Kalkulátora nejdřív dořeknout hlášku
+  if(!paused)return;
+  if(window.speechSynthesis&&speechSynthesis.speaking){setTimeout(()=>explainWhenQuiet(x),250);return;}
+  explain(x);
+}
 function explain(txt){
   const b=$("bubble");b.textContent="🧮 "+txt;b.classList.add("show","explain");
   calcFace("squint");speak(txt);
@@ -1641,7 +1646,7 @@ function finishReveal(ok){
   let wait=ok?2200:2600;
   if(G.curQ.x){ // pauza s vysvětlením správné odpovědi
     wait=7500;
-    setTimeout(()=>{if(paused)explain(G.curQ.x)},1300);
+    setTimeout(()=>explainWhenQuiet(G.curQ.x),1200);
   }
   pauseThenNext(wait);
 }
@@ -1694,7 +1699,7 @@ function onTimeout(){
   sfxBad();sfxBray();calcFace("happy");bubble(t);speak(t,.55);
   G.streak=0;G.answered++;G.i++;
   let wait=2600;
-  if(G.curQ.x){wait=7500;setTimeout(()=>{if(paused)explain(G.curQ.x)},1300);}
+  if(G.curQ.x){wait=7500;setTimeout(()=>explainWhenQuiet(G.curQ.x),1200);}
   pauseThenNext(wait);
 }
 
