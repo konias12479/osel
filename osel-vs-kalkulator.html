@@ -202,7 +202,6 @@
   <div class="modes">
     <button class="mode" data-mode="klasik"><span class="ic">🏆</span><div><b>Klasická hra</b><span>20 otázek od rozcvičky po zabijáky. Přežiješ všechny?</span></div></button>
     <button class="mode" data-mode="duel"><span class="ic">⚡</span><div><b>Rychlý duel</b><span>60 sekund. Kolik toho stihneš?</span></div></button>
-    <button class="mode" data-mode="osel"><span class="ic">🫏</span><div><b>Osel mód</b><span>Směšně lehké otázky. Kalkulátor se ti směje.</span></div></button>
     <button class="mode" data-mode="kalkulator"><span class="ic">🧮</span><div><b>Kalkulátor mód</b><span>Jen tříhvězdičkové otázky. Dvojnásobné XP.</span></div></button>
     <button class="mode" data-mode="legendy"><span class="ic">🇨🇿</span><div><b>České legendy</b><span>Česká kultura, filmy, historie a sport. Bez lehkých otázek.</span></div></button>
     <button class="mode" data-mode="vlastni"><span class="ic">📂</span><div><b>Moje otázky</b><span>Hraje se jen z tvých nahraných otázek.</span></div></button>
@@ -1524,7 +1523,6 @@ function flash(kind){ const f=$("flash");f.className="flash "+kind+" show";setTi
 const MODES={
   klasik:{name:"Klasická hra",time:12,xpMult:1},
   duel:{name:"Rychlý duel",time:60,xpMult:1},
-  osel:{name:"Osel mód",time:8,xpMult:.5},
   kalkulator:{name:"Kalkulátor mód",time:18,xpMult:2},
   legendy:{name:"České legendy",time:12,xpMult:1.5},
   vlastni:{name:"Moje otázky",time:15,xpMult:1},
@@ -1536,7 +1534,6 @@ function buildDeck(mode){
   const base=QUESTIONS.filter(x=>mixCustom||(x.k!=="Vlastní"&&x.k!=="Pro Tátu")); // speciální sady jen ve svých módech
   const d1=shuffle(base.filter(x=>x.d===1)), d2=shuffle(base.filter(x=>x.d===2)), d3=shuffle(base.filter(x=>x.d===3));
   if(mode==="klasik") return [...d1.slice(0,1),...d2.slice(0,6),...d3.slice(0,13)];
-  if(mode==="osel") return d1.slice(0,10);
   if(mode==="kalkulator") return d3.slice(0,12);
   if(mode==="legendy") return shuffle(base.filter(x=>x.cz&&x.d>=2)).slice(0,15);
   if(mode==="vlastni") return shuffle(QUESTIONS.filter(x=>x.k==="Vlastní"));
