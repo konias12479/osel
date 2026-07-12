@@ -1862,7 +1862,6 @@ function endGame(){
   };
   if(pct>.5){ // hráč vyhrál — Kalkulátor to nese těžce
     calcFace("sad");
-    $("calcsvg").classList.remove("lean");
     if(quipsOn){
       const t=pickQuip("lose");bubble(t,4200);speak(t,1);
       const chk=()=>{if(window.speechSynthesis&&speechSynthesis.speaking){setTimeout(chk,250);return;}finish();};
