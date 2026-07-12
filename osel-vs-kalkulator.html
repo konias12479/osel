@@ -182,8 +182,7 @@
   <div class="logo">
     <h1>Pomsta <span class="vs">⚡</span> Kalkulátora</h1>
   </div>
-  <p class="tagline">Kvízová show, kde tě počítá stroj. A počítá s tím, že prohraješ. 🧮<br>
-  <span id="verTag" style="font-size:10px;color:#7d76b8;letter-spacing:2px"></span></p>
+  <p class="tagline">Kvízová show, kde tě počítá stroj. A počítá s tím, že prohraješ. 🧮</p>
   <div class="playerbar">
     <span class="donk">🫏</span>
     <div class="pb-info">
@@ -200,10 +199,11 @@
     <button class="mode" data-mode="kalkulator"><span class="ic">🧮</span><div><b>Kalkulátor mód</b><span>Jen tříhvězdičkové otázky. Dvojnásobné XP.</span></div></button>
     <button class="mode" data-mode="legendy"><span class="ic">🇨🇿</span><div><b>České legendy</b><span>Česká kultura, filmy, historie a sport. Bez lehkých otázek.</span></div></button>
     <button class="mode" data-mode="vlastni"><span class="ic">📂</span><div><b>Moje otázky</b><span>Hraje se jen z tvých nahraných otázek.</span></div></button>
+    <button class="mode" data-mode="tata"><span class="ic">👨</span><div><b>Pro Tátu</b><span>Osečany, rok 1968, tankový pluk Žatec a Praha 70.–90. let.</span></div></button>
   </div>
   <button class="soundtoggle" id="soundBtn">🔊 Zvuk: zapnutý</button>
   <button class="soundtoggle" id="voiceBtn">🗣️ Hlas Kalkulátora: zapnutý</button>
-  <button class="soundtoggle" id="musicBtn">🎵 Hudba: vypnutá</button>
+  <button class="soundtoggle" id="musicBtn">🎵 Hudba: zapnutá</button>
   <button class="soundtoggle" id="mixBtn">🔀 Moje otázky i v ostatních módech: vypnuto</button>
   <button class="soundtoggle" id="uploadBtn" style="border-color:rgba(255,207,63,.5);color:var(--neon-gold)">📂 Nahrát vlastní otázky (PDF / Word / TXT)</button>
   <p class="tagline" style="font-size:11px;margin-top:4px">Formát: Otázka?;správná;špatná;špatná(;špatná) — více správných označ hvězdičkou: *odpověď</p>
@@ -1353,7 +1353,7 @@ const QUIPS = {
 const PRON=[[/\bGPS\b/g,"džípíes"],[/\bWi-?Fi\b/gi,"vajfaj"],[/\bUSB\b/g,"jů es bí"],[/\bOK\b/g,"okej"],[/\bYouTube\b/gi,"jůtůb"],[/\bGoogle\b/gi,"gůgl"],[/\biPhone\b/gi,"ajfoun"],[/\bError\b/gi,"eror"],[/\be-?mail\b/gi,"ímejl"],[/\bonline\b/gi,"onlajn"]];
 
 /* ================= LEVELY ================= */
-const CATEMOJI={"Základ":"🧸","Historie":"🏛️","Geografie":"🗺️","Filmy a pohádky":"🎬","Kultura":"🎭","Sport":"🏅","Hudba":"🎵","Věda":"🔬","Svět":"🌍","Politika":"⚖️","Internet":"💻","Příroda":"🌿","Jídlo":"🍽️","Čeština":"📝"};
+const CATEMOJI={"Základ":"🧸","Historie":"🏛️","Geografie":"🗺️","Filmy a pohádky":"🎬","Kultura":"🎭","Sport":"🏅","Hudba":"🎵","Věda":"🔬","Svět":"🌍","Politika":"⚖️","Internet":"💻","Příroda":"🌿","Jídlo":"🍽️","Čeština":"📝","Pro Tátu":"👨"};
 const LEVELS=[
   {xp:0,t:"Mládě"},{xp:100,t:"Oslík"},{xp:300,t:"Chytrý osel"},
   {xp:700,t:"Superosel"},{xp:1500,t:"Mistr Osel"},{xp:3000,t:"Legenda mezi osly"}
@@ -1442,8 +1442,9 @@ function speak(txt,chance=1){
     let t=txt.replace(/[^\p{L}\p{N}\s.,!?%„“‚'’()–—-]/gu,"");
     for(const [re,sub] of PRON)t=t.replace(re,sub);
     const u=new SpeechSynthesisUtterance(t);
-    u.lang="cs-CZ";u.rate=1.08;u.pitch=0.6;u.volume=.95;
-    const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith("cs"));
+    u.lang="cs-CZ";u.rate=1.02;u.pitch=0.9;u.volume=.95; // přirozenější posazení hlasu
+    const voices=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith("cs"));
+    const v=voices.find(v=>/natural|neural|premium|enhanced|google/i.test(v.name))||voices[0];
     if(v)u.voice=v;
     u.onstart=startTalking;
     u.onend=stopTalking;u.onerror=stopTalking;
@@ -1485,18 +1486,20 @@ const MODES={
   osel:{name:"Osel mód",time:8,xpMult:.5},
   kalkulator:{name:"Kalkulátor mód",time:18,xpMult:2},
   legendy:{name:"České legendy",time:12,xpMult:1.5},
-  vlastni:{name:"Moje otázky",time:15,xpMult:1}
+  vlastni:{name:"Moje otázky",time:15,xpMult:1},
+  tata:{name:"Pro Tátu",time:15,xpMult:1}
 };
 let G=null, timerInt=null;
 
 function buildDeck(mode){
-  const base=QUESTIONS.filter(x=>mixCustom||x.k!=="Vlastní"); // bez vlastních, pokud je míchání vypnuté
+  const base=QUESTIONS.filter(x=>mixCustom||(x.k!=="Vlastní"&&x.k!=="Pro Tátu")); // speciální sady jen ve svých módech
   const d1=shuffle(base.filter(x=>x.d===1)), d2=shuffle(base.filter(x=>x.d===2)), d3=shuffle(base.filter(x=>x.d===3));
   if(mode==="klasik") return [...d1.slice(0,1),...d2.slice(0,5),...d3.slice(0,9)];
   if(mode==="osel") return d1.slice(0,10);
   if(mode==="kalkulator") return d3.slice(0,12);
   if(mode==="legendy") return shuffle(base.filter(x=>x.cz&&x.d>=2)).slice(0,15);
   if(mode==="vlastni") return shuffle(QUESTIONS.filter(x=>x.k==="Vlastní"));
+  if(mode==="tata") return shuffle(QUESTIONS.filter(x=>x.k==="Pro Tátu"));
   return shuffle(base.filter(x=>x.d>=2)); // duel — bez lehkých otázek
 }
 
@@ -1505,10 +1508,14 @@ function startGame(mode){
     alert("Zatím nemáš žádné vlastní otázky. Nahraj je tlačítkem „📂 Nahrát vlastní otázky“ dole v menu.");
     return;
   }
+  if(mode==="tata"&&!QUESTIONS.some(x=>x.k==="Pro Tátu")){
+    alert("Otázky „Pro Tátu“ se načítají ze souboru pro-tatu.txt vedle hry — na webu se načtou samy.");
+    return;
+  }
   const c=ac(); if(c&&c.state==="suspended")c.resume();
   const deck=buildDeck(mode);
   G={mode,deck,i:0,score:0,streak:0,best:0,jokerUsed:false,
-     total:mode==="duel"?Infinity:(mode==="vlastni"?deck.length:(mode==="klasik"||mode==="legendy"?15:(mode==="kalkulator"?12:10))),
+     total:mode==="duel"?Infinity:(mode==="vlastni"||mode==="tata"?deck.length:(mode==="klasik"||mode==="legendy"?15:(mode==="kalkulator"?12:10))),
      timeLeft:MODES[mode].time, answered:0};
   $("jokerBtn").disabled=false;
   showScreen("game");
@@ -1695,13 +1702,13 @@ document.addEventListener("keydown",e=>{
 /* ========== VLASTNÍ OTÁZKY Z PDF / WORD / TXT ========== */
 function loadScript(src){return new Promise((res,rej)=>{
   const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("Knihovnu se nepodařilo stáhnout"));document.head.appendChild(s);});}
-function parseCustom(text){
+function parseCustom(text,kat="Vlastní",emo="📂"){
   const out=[],push=(q,ans)=>{
     const corr=[],clean=[];
     ans.forEach(s=>{s=s.trim();
       if(s.startsWith("*")){corr.push(clean.length);clean.push(s.slice(1).trim());}
       else clean.push(s);});
-    out.push({q:q.trim(),a:clean,corr:corr.length?corr:[0],d:2,k:"Vlastní",e:"📂"});
+    out.push({q:q.trim(),a:clean,corr:corr.length?corr:[0],d:2,k:kat,e:emo});
   };
   text.split(/\r?\n/).forEach(line=>{
     const p=line.split(/[;|]/).map(s=>s.trim()).filter(Boolean);
@@ -1828,24 +1835,25 @@ $("mixBtn").addEventListener("click",()=>{
   mixCustom=!mixCustom;store.mix=mixCustom;save();refreshMixBtn();
 });
 
-/* ===== HUDBA: smyčka z initial.mp3 (leží vedle hry), tichá hlasitost ===== */
-let bgAudio=null;
-$("musicBtn").addEventListener("click",()=>{
-  if(!bgAudio){
-    bgAudio=new Audio("initial.mp3");
-    bgAudio.loop=true;
-    bgAudio.volume=0.12; // malá hlasitost, jen podkres
-  }
-  if(bgAudio.paused){
-    bgAudio.play().then(()=>{
-      $("musicBtn").textContent="🎵 Hudba: hraje";
-    }).catch(()=>{
-      alert("Hudbu se nepodařilo přehrát — soubor initial.mp3 musí ležet ve stejné složce jako hra.");
-    });
-  }else{
-    bgAudio.pause();
-    $("musicBtn").textContent="🎵 Hudba: vypnutá";
-  }
+/* ===== HUDBA: initial.mp3, zapnutá od startu, začíná od 13. sekundy ===== */
+const BGM_START=13; // úvod skladby je skoro neslyšet
+let bgAudio=new Audio("initial.mp3");
+bgAudio.volume=0.06; // velmi tichý podkres
+bgAudio.addEventListener("loadedmetadata",()=>{try{bgAudio.currentTime=BGM_START}catch(e){}});
+bgAudio.addEventListener("ended",()=>{bgAudio.currentTime=BGM_START;bgAudio.play().catch(()=>{});}); // smyčka od 13 s
+let musicWanted=true;
+function tryMusic(){
+  if(!musicWanted||!bgAudio.paused)return;
+  if(bgAudio.currentTime<BGM_START)try{bgAudio.currentTime=BGM_START}catch(e){}
+  bgAudio.play().then(()=>{$("musicBtn").textContent="🎵 Hudba: hraje";}).catch(()=>{});
+}
+tryMusic(); // pokus hned; prohlížeč zvuk povolí nejpozději po prvním kliknutí
+document.addEventListener("click",tryMusic);
+$("musicBtn").addEventListener("click",e=>{
+  e.stopPropagation();
+  musicWanted=!musicWanted;
+  if(musicWanted){$("musicBtn").textContent="🎵 Hudba: hraje";tryMusic();}
+  else{bgAudio.pause();$("musicBtn").textContent="🎵 Hudba: vypnutá";}
 });
 refreshMenuBar();
 
@@ -1854,16 +1862,12 @@ refreshMenuBar();
    načte se sám — sekce „Moje otázky“ je pak rovnou plná. */
 fetch("moje-otazky.txt")
   .then(r=>r.ok?r.text():null)
-  .then(t=>{
-    if(!t)return;
-    const qs=parseCustom(t);
-    if(qs.length){
-      QUESTIONS.push(...qs);
-      $("verTag").textContent="✓ "+qs.length+" VLASTNÍCH OTÁZEK PŘIPRAVENO";
-      $("verTag").style.color="#ffcf3f";
-    }
-  })
-  .catch(()=>{}); // lokálně (file://) se tiše přeskočí — zůstává tlačítko 📂
+  .then(t=>{if(t){const qs=parseCustom(t);if(qs.length)QUESTIONS.push(...qs);}})
+  .catch(()=>{});
+fetch("pro-tatu.txt")
+  .then(r=>r.ok?r.text():null)
+  .then(t=>{if(t){const qs=parseCustom(t,"Pro Tátu","👨");if(qs.length)QUESTIONS.push(...qs);}})
+  .catch(()=>{}); // lokálně (file://) se tiše přeskočí
 </script>
 </body>
 </html>
