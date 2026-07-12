@@ -115,6 +115,9 @@
   #calcsvg.gest-open #handR{transform:translate(6px,-7px) rotate(20deg)}
   #calcsvg.tap #handR{animation:tapA .3s ease-in-out 2}
   @keyframes tapA{50%{transform:translateY(-3.5px)}}
+  /* recitátorská póza při vysvětlování: pravice pozvednutá, levice klidná */
+  #calcsvg.declaim #handR{animation:none;transform:translate(5px,-16px) rotate(30deg)}
+  #calcsvg.declaim #handL{animation:none;transform:translateY(-2px) rotate(-5deg)}
   #gaze{transition:transform .35s ease}
   #calcsvg.glitch{animation:glitch .45s steps(2) 3}
   @keyframes glitch{0%{transform:translate(0)}25%{transform:translate(-5px,3px) skewX(6deg);filter:hue-rotate(120deg) drop-shadow(0 0 18px rgba(255,43,214,.6))}
@@ -1510,7 +1513,7 @@ function speak(txt,chance=1){
     let t=txt.replace(/[^\p{L}\p{N}\s.,!?%„“‚'’()–—-]/gu,"");
     for(const [re,sub] of PRON)t=t.replace(re,sub);
     const u=new SpeechSynthesisUtterance(t);
-    u.lang="cs-CZ";u.rate=1.02;u.pitch=0.9;u.volume=.95; // přirozenější posazení hlasu
+    u.lang="cs-CZ";u.rate=0.94;u.pitch=0.8;u.volume=.95; // hlubší, volnější recitátorský přednes
     const voices=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith("cs"));
     const v=voices.find(v=>/natural|neural|premium|enhanced|google/i.test(v.name))||voices[0];
     if(v)u.voice=v;
@@ -1528,8 +1531,14 @@ function explainWhenQuiet(x){ // nech Kalkulátora nejdřív dořeknout hlášku
 function explain(txt){
   if(G&&G.mode==="tata"&&Math.random()<.35)txt="Rudo — "+txt; // občas oslovit jménem
   const b=$("bubble");b.textContent="🧮 "+txt;b.classList.add("show","explain");
+  const sv=$("calcsvg");sv.classList.add("declaim"); // recitátorské gesto: hlava vzhůru, ruka pozvednutá
+  const hg=$("headG");if(hg)hg.style.transform="rotate(-2deg) translateY(-2px)";
   calcFace("squint");speak(txt);
-  clearTimeout(b._t);b._t=setTimeout(()=>{b.classList.remove("show","explain")},6000);
+  clearTimeout(b._t);b._t=setTimeout(()=>{
+    b.classList.remove("show","explain");
+    sv.classList.remove("declaim");
+    if(hg)hg.style.transform="";
+  },6000);
 }
 // mrkání oběma očima (víčka se zavřou a otevřou)
 setInterval(()=>{
@@ -1757,6 +1766,7 @@ function nextQ(){
   paused=false;clearTimeout(pauseTO);
   $("skipBtn").classList.remove("show");
   const b=$("bubble");b.classList.remove("show","explain");
+  $("calcsvg").classList.remove("declaim");
   if(window.speechSynthesis)try{speechSynthesis.cancel()}catch(e){}
   stopTalking();
   if(G&&G.mode==="duel")startDuelTimer();
