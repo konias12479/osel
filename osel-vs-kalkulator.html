@@ -250,18 +250,36 @@
           <!-- sako (dvouřadé, proužek) -->
           <path d="M18 260 C22 210 48 188 74 180 L100 174 L126 180 C152 188 178 210 182 260 Z" fill="url(#suit)" stroke="#00e5ff" stroke-width="2"/>
           <path d="M18 260 C22 210 48 188 74 180 L100 174 L126 180 C152 188 178 210 182 260 Z" fill="url(#pins)"/>
-          <!-- košile a kravata -->
-          <path d="M84 180 L100 210 L116 180 L100 174 Z" fill="#cfe4ff"/>
-          <path d="M96 182 L104 182 L106 196 L100 230 L94 196 Z" fill="#8f1d33"/>
-          <circle cx="98" cy="192" r="1.2" fill="#e8c25a"/><circle cx="102" cy="200" r="1.2" fill="#e8c25a"/><circle cx="99" cy="210" r="1.2" fill="#e8c25a"/>
+          <!-- košile s límečkem a kravata -->
+          <path d="M84 178 L100 214 L116 178 L100 170 Z" fill="#dfeaff"/>
+          <path d="M88 172 L100 182 L92 188 Z" fill="#f4f8ff"/>
+          <path d="M112 172 L100 182 L108 188 Z" fill="#f4f8ff"/>
+          <path d="M95 180 L105 180 L107 190 L100 216 L93 190 Z" fill="#8f1d33"/>
+          <path d="M96 181 L104 181 L103 187 L97 187 Z" fill="#7a1226"/>
+          <circle cx="98" cy="196" r="1.1" fill="#e8c25a"/><circle cx="102" cy="203" r="1.1" fill="#e8c25a"/>
           <!-- klopy -->
-          <path d="M84 180 L100 174 L86 214 L72 196 Z" fill="#1b2140" stroke="#39406b" stroke-width="1"/>
-          <path d="M116 180 L100 174 L114 214 L128 196 Z" fill="#1b2140" stroke="#39406b" stroke-width="1"/>
+          <path d="M84 178 L100 170 L86 214 L72 196 Z" fill="#1b2140" stroke="#39406b" stroke-width="1"/>
+          <path d="M116 178 L100 170 L114 214 L128 196 Z" fill="#1b2140" stroke="#39406b" stroke-width="1"/>
           <!-- kapesníček -->
-          <path d="M134 208 L148 204 L146 216 L136 218 Z" fill="#3d5bbf"/><path d="M138 206 L144 205 L143 210 Z" fill="#c23b3b"/>
-          <!-- knoflíky -->
-          <circle cx="88" cy="226" r="2.4" fill="#0d1126"/><circle cx="112" cy="226" r="2.4" fill="#0d1126"/>
-          <circle cx="88" cy="244" r="2.4" fill="#0d1126"/><circle cx="112" cy="244" r="2.4" fill="#0d1126"/>
+          <path d="M134 206 L148 202 L146 214 L136 216 Z" fill="#3d5bbf"/><path d="M138 204 L144 203 L143 208 Z" fill="#c23b3b"/>
+          <!-- ===== MODERÁTORSKÝ STŮL ===== -->
+          <linearGradient id="deskG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a2f5e"/><stop offset="1" stop-color="#141833"/>
+          </linearGradient>
+          <rect x="4" y="216" width="192" height="44" rx="6" fill="url(#deskG)"/>
+          <line x1="6" y1="217" x2="194" y2="217" stroke="#00e5ff" stroke-width="2" opacity=".8"/>
+          <rect x="62" y="240" width="76" height="14" rx="4" fill="#0d1126" stroke="#ffcf3f" stroke-width="1.4"/>
+          <text x="100" y="250" text-anchor="middle" fill="#ffcf3f" font-size="8.5" font-weight="bold" letter-spacing="2.5" font-family="Segoe UI, sans-serif">KALKULÁTOR</text>
+          <!-- ===== PAŽE OPŘENÉ O STŮL ===== -->
+          <path d="M34 204 C42 220 60 228 86 229 L86 238 C56 238 36 228 26 210 C28 204 31 202 34 204 Z" fill="#1e2447" stroke="#39406b" stroke-width="1"/>
+          <path d="M166 204 C158 220 140 228 114 229 L114 238 C144 238 164 228 174 210 C172 204 169 202 166 204 Z" fill="#1e2447" stroke="#39406b" stroke-width="1"/>
+          <rect x="80" y="227" width="9" height="11" rx="3" fill="#dbe9ff"/>
+          <rect x="111" y="227" width="9" height="11" rx="3" fill="#dbe9ff"/>
+          <!-- sepnuté ruce -->
+          <ellipse cx="100" cy="233" rx="17" ry="8.5" fill="#e2ae80"/>
+          <ellipse cx="91" cy="229.5" rx="5" ry="3.4" fill="#e8b78a"/>
+          <ellipse cx="109" cy="229.5" rx="5" ry="3.4" fill="#e8b78a"/>
+          <path d="M90 232 Q94 235 98 232 M97 234 Q101 237 105 234 M104 232 Q108 235 112 232" stroke="#c08c5c" stroke-width="1" fill="none"/>
           <!-- krk -->
           <path d="M88 148 L88 178 Q100 184 112 178 L112 148 Z" fill="#d9a67a"/>
           <path d="M88 152 Q100 160 112 152 L112 158 Q100 164 88 158 Z" fill="#c9925f" opacity=".5"/>
@@ -274,9 +292,15 @@
             <path d="M148 88 Q145 93 148 98" stroke="#c08c5c" stroke-width="1.5" fill="none"/>
             <!-- obličej -->
             <path d="M100 34 C132 34 146 58 145 88 C144.5 112 132 132 118 141 C111 145.5 89 145.5 82 141 C68 132 55.5 112 55 88 C54 58 68 34 100 34 Z" fill="url(#skin)"/>
-            <!-- lehké tváře -->
+            <!-- lehké tváře a lidské detaily -->
             <ellipse cx="72" cy="106" rx="8" ry="5" fill="#d98f66" opacity=".18"/>
             <ellipse cx="128" cy="106" rx="8" ry="5" fill="#d98f66" opacity=".18"/>
+            <ellipse cx="70" cy="100" rx="5" ry="3" fill="#f6cf9f" opacity=".35"/>
+            <ellipse cx="130" cy="100" rx="5" ry="3" fill="#f6cf9f" opacity=".35"/>
+            <path d="M78 56 Q100 52 122 56" stroke="#d8a577" stroke-width="1" fill="none" opacity=".35"/>
+            <path d="M82 62 Q100 58.5 118 62" stroke="#d8a577" stroke-width="1" fill="none" opacity=".25"/>
+            <path d="M88 112 Q84 119 86 125" stroke="#cf9a6a" stroke-width="1" fill="none" opacity=".3"/>
+            <path d="M112 112 Q116 119 114 125" stroke="#cf9a6a" stroke-width="1" fill="none" opacity=".3"/>
             <!-- prošedivělé vlasy (ustupující) -->
             <path d="M57 78 C59 46 79 32 100 32 C121 32 141 46 143 78 C137 57 121 45 100 45 C79 45 63 57 57 78 Z" fill="#a19a92"/>
             <path d="M57 78 Q60 68 66 61 L64 80 Z" fill="#a19a92"/>
@@ -1604,14 +1628,10 @@ function finishReveal(ok){
   if(ok){ // správně → Kalkulátor zuří a digitálně se rozpadá
     G.score++;G.streak++;G.best=Math.max(G.best,G.streak);
     sfxOk();flash("ok");calcFace("angry");
-    $("calcsvg").classList.add("glitch");
-    setTimeout(()=>$("calcsvg").classList.remove("glitch"),1400);
     const t=pickQuip("correct");bubble(t);speak(t,.55);
   }else{ // špatně → Kalkulátor má obrovskou radost
     G.streak=0;
     sfxBad();setTimeout(sfxBray,350);flash("bad");calcFace("happy");
-    $("calcsvg").classList.add("happyjump");
-    setTimeout(()=>$("calcsvg").classList.remove("happyjump"),750);
     $("donkChip").classList.add("shake");
     setTimeout(()=>$("donkChip").classList.remove("shake"),600);
     const t=pickQuip(G.mode==="osel"?"oselWrong":"wrong");bubble(t);speak(t,.55);
