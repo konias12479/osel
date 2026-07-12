@@ -188,7 +188,7 @@
     <h1>Pomsta <span class="vs">⚡</span> Kalkulátora</h1>
   </div>
   <p class="tagline">Kvízová show, kde tě počítá stroj. A počítá s tím, že prohraješ. 🧮<br>
-  <span id="verTag" style="font-size:10px;color:#7d76b8;letter-spacing:2px">ZÁKLADNÍ VERZE</span></p>
+  <span id="verTag" style="font-size:10px;color:#7d76b8;letter-spacing:2px"></span></p>
   <div class="playerbar">
     <span class="donk">🫏</span>
     <div class="pb-info">
@@ -1870,9 +1870,8 @@ fetch("moje-otazky.txt")
     const qs=parseCustom(t);
     if(qs.length){
       QUESTIONS.push(...qs);
-      $("verTag").textContent="VERZE „IRČA“ • "+qs.length+" OTÁZEK NAČTENO ✓";
+      $("verTag").textContent="✓ "+qs.length+" VLASTNÍCH OTÁZEK PŘIPRAVENO";
       $("verTag").style.color="#ffcf3f";
-      document.title="🧮 Pomsta Kalkulátora — Irča";
     }
   })
   .catch(()=>{}); // lokálně (file://) se tiše přeskočí — zůstává tlačítko 📂
