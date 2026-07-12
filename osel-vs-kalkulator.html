@@ -231,7 +231,6 @@
     </div>
     <div class="calcwrap">
       <div class="bubble" id="bubble"></div>
-      <div class="emopop" id="emoPop"></div>
       <button class="skipbtn" id="skipBtn">⏭ Přeskočit (mezerník)</button>
       <svg id="calcsvg" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -1610,7 +1609,6 @@ function renderQ(){
   if(G.i>=G.deck.length || (G.mode!=="duel" && G.i>=G.total)){endGame();return}
   const Q=G.deck[G.i];
   G.curQ=Q;
-  $("emoPop").classList.remove("show");
   // zamíchat odpovědi (3 nebo 4 možnosti), zapamatovat správné indexy
   const n=Q.a.length;
   const idx=shuffle([...Array(n).keys()]);
@@ -1647,9 +1645,6 @@ function renderQ(){
 }
 
 function finishReveal(ok){
-  const ep=$("emoPop");
-  ep.textContent=(G.curQ&&G.curQ.e)||CATEMOJI[G.curQ&&G.curQ.k]||"❓";
-  ep.classList.add("show");
   if(ok){ // správně → Kalkulátor zuří a digitálně se rozpadá
     G.score++;G.streak++;G.best=Math.max(G.best,G.streak);
     sfxOk();flash("ok");calcFace("angry");
