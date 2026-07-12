@@ -1844,14 +1844,19 @@ bgAudio.addEventListener("loadedmetadata",()=>{try{bgAudio.currentTime=BGM_START
 bgAudio.addEventListener("ended",()=>{bgAudio.currentTime=BGM_START;bgAudio.play().catch(()=>{});}); // smyčka od 13 s
 let vlastniAudio=new Audio("vlastni-otazky.mp3"); // hudba jen pro mód Moje otázky
 vlastniAudio.volume=0.06;vlastniAudio.loop=true;
+let hraAudio=new Audio("hra.mp3"); // hudba během hraní (ostatní módy)
+hraAudio.volume=0.06;hraAudio.loop=true;
 let musicWanted=true;
-function currentTrack(){
-  return (G&&G.mode==="vlastni"&&$("game").classList.contains("active"))?vlastniAudio:bgAudio;
+const ALL_TRACKS=[bgAudio,vlastniAudio,hraAudio];
+function currentTrack(){ // menu a výsledky = initial, hra = hra.mp3, Moje otázky = vlastní
+  if(G&&$("game").classList.contains("active"))
+    return G.mode==="vlastni"?vlastniAudio:hraAudio;
+  return bgAudio;
 }
 function tryMusic(){
   if(!musicWanted)return;
-  const want=currentTrack(),other=(want===bgAudio)?vlastniAudio:bgAudio;
-  if(!other.paused)other.pause();
+  const want=currentTrack();
+  ALL_TRACKS.forEach(a=>{if(a!==want&&!a.paused)a.pause();});
   if(want.paused){
     if(want===bgAudio&&bgAudio.currentTime<BGM_START)try{bgAudio.currentTime=BGM_START}catch(e){}
     want.play().then(()=>{$("musicBtn").textContent="🎵 Hudba: hraje";}).catch(()=>{});
@@ -1863,7 +1868,7 @@ $("musicBtn").addEventListener("click",e=>{
   e.stopPropagation();
   musicWanted=!musicWanted;
   if(musicWanted){$("musicBtn").textContent="🎵 Hudba: hraje";tryMusic();}
-  else{bgAudio.pause();vlastniAudio.pause();$("musicBtn").textContent="🎵 Hudba: vypnutá";}
+  else{ALL_TRACKS.forEach(a=>a.pause());$("musicBtn").textContent="🎵 Hudba: vypnutá";}
 });
 refreshMenuBar();
 
