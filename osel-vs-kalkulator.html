@@ -1380,9 +1380,14 @@ const QUIPS = {
   funny:["Můj bratranec je parkovací automat. Bere peníze a nic nedělá. Vzor.","Kdybych měl nohy, dávno jsem v Karibiku.","Včera jsem randil s kalkulačkou z Lidlu. Nepočítala se mnou.","Nudíš mě. Mezitím jsem si udělal daně. Dvakrát.","Já jedu na solár, ty na kafe. Oba občas nefungujeme.","Chceš nápovědu publika? Aha… ty žádné nemáš.","Kdysi jsem dělil nulou. Doktoři mi dávali týden.","Mám osm giga paměti. A stejně si tě nechci pamatovat.","Chtěl jsem být počítač. Nevyšlo to o pár čipů.","Můj displej má víc pixelů než ty nápadů.","Znáš ten pocit, když všechno víš? Ne? Já pořád.","Kdyby ses teď viděl. Vlastně… radši ne.","Vydrž, směju se vnitřně. Íííá.","Baterie sto procent. Ochota pomáhat nula.","Víš, co je smutné? Tohle je vrchol mého společenského života.","Počítám rychleji, než ty stíháš litovat.","Dneska jsem si přivstal. O tři milisekundy.","Tvůj výraz právě teď? Ukládám jako tapetu.","Mít ruce, vařím si kafe. Litr.","Ty přemýšlíš nahlas, nebo to jen tak syčí?","Klid, nikam nespěchám. Jsem v zásuvce.","Kdysi jsem počítal hvězdy. Teď počítám tvoje chyby. Víc práce.","Moje úhlopříčka je větší než tvoje trpělivost.","Za tuhle práci mě platí ve wattech. Málo wattech.","Chtěl bych dovolenou. Týden v ledničce.","Nemám nos, a stejně mi tvoje odpovědi smrdí.","Kdyby ses nudil… já ne. Já se bavím skvěle.","Zívl bych, ale nemám čím. Ber to jako kompliment.","Někdy v noci si přepočítávám tvoje skóre. Pro zasmání.","Víš, co mě nabíjí? Doslova? Zásuvka. Ale tohle taky."]
 };
 const QUIP_BAGS={}; // hlášky se nesmí opakovat, dokud se nevyčerpá celá zásoba dané kategorie
+function personalize(t){ // v módu Pro Tátu oslovuje Kalkulátor hráče jménem
+  if(!G||G.mode!=="tata")return t;
+  if(/kopytníku|oslíku/i.test(t))return t.replace(/kopytníku|oslíku/gi,"Rudo");
+  return Math.random()<.5?("Rudo — "+t):t;
+}
 function pickQuip(cat){
   if(!QUIP_BAGS[cat]||!QUIP_BAGS[cat].length)QUIP_BAGS[cat]=shuffle([...QUIPS[cat]]);
-  return QUIP_BAGS[cat].pop();
+  return personalize(QUIP_BAGS[cat].pop());
 }
 // anglická výslovnost vybraných slov
 const PRON=[[/\bGPS\b/g,"džípíes"],[/\bWi-?Fi\b/gi,"vajfaj"],[/\bUSB\b/g,"jů es bí"],[/\bOK\b/g,"okej"],[/\bYouTube\b/gi,"jůtůb"],[/\bGoogle\b/gi,"gůgl"],[/\biPhone\b/gi,"ajfoun"],[/\bError\b/gi,"eror"],[/\be-?mail\b/gi,"ímejl"],[/\bonline\b/gi,"onlajn"]];
@@ -1493,6 +1498,7 @@ function explainWhenQuiet(x){ // nech Kalkulátora nejdřív dořeknout hlášku
   explain(x);
 }
 function explain(txt){
+  if(G&&G.mode==="tata"&&Math.random()<.35)txt="Rudo — "+txt; // občas oslovit jménem
   const b=$("bubble");b.textContent="🧮 "+txt;b.classList.add("show","explain");
   calcFace("squint");speak(txt);
   clearTimeout(b._t);b._t=setTimeout(()=>{b.classList.remove("show","explain")},6000);
