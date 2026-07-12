@@ -374,6 +374,7 @@
     <div class="jokerrow">
       <button class="joker" id="confirmBtn" style="display:none;border-style:solid;background:linear-gradient(90deg,var(--neon-gold),#ffb03f);color:#221a00;font-weight:900">✅ Potvrdit odpovědi</button>
       <button class="joker" id="jokerBtn">🦵 Oslí kopanec (škrtne 1 špatnou)</button>
+      <button class="joker" id="quipBtnGame" title="Vypnout hlášky Kalkulátora (vysvětlení zůstanou)">💬 Hlášky: zap</button>
       <button class="joker" id="voiceBtnGame" title="Zapnout/vypnout hlas Kalkulátora">🗣️ Hlas: zap</button>
       <button class="joker" id="quitBtn" style="border-color:rgba(255,255,255,.3);color:#9c94d8">✖ Konec</button>
     </div>
@@ -1426,6 +1427,7 @@ try{ const s=localStorage.getItem("ovk_save"); if(s) store=JSON.parse(s);}catch(
 function save(){ try{localStorage.setItem("ovk_save",JSON.stringify(store))}catch(e){} }
 let voiceOn=store.voice!==false; // hlas Kalkulátora
 let mixCustom=store.mix===true; // míchat vlastní otázky do ostatních módů (výchozí: ne)
+let quipsOn=store.q!==false; // hlášky Kalkulátora (vysvětlení otázek zůstávají vždy)
 
 /* ================= POMOCNÉ ================= */
 const $=id=>document.getElementById(id);
@@ -1536,7 +1538,7 @@ const MODES={
   kalkulator:{name:"Kalkulátor mód",time:18,xpMult:2},
   legendy:{name:"České legendy",time:12,xpMult:1.5},
   vlastni:{name:"Moje otázky",time:15,xpMult:1},
-  tata:{name:"Pro Tátu",time:15,xpMult:1}
+  tata:{name:"Pro Tátu",time:30,xpMult:1}
 };
 let G=null, timerInt=null;
 
@@ -1568,7 +1570,7 @@ function startGame(mode){
   $("jokerBtn").disabled=false;
   showScreen("game");
   calcFace("neutral");
-  bubble(pickQuip("intro"));
+  if(quipsOn){const it=pickQuip("intro");bubble(it);if(mode==="tata")speak(it,1);}
   if(mode==="duel") startDuelTimer();
   setTimeout(()=>renderQ(),900);
 }
@@ -1636,7 +1638,11 @@ function renderQ(){
   });
   calcFace(Math.random()<.4?"squint":"neutral");
   $("calcsvg").classList.add("lean");
-  if(Math.random()<.35){const t=pickQuip(Math.random()<.5?"tension":"funny");bubble(t,2600);speak(t,.4);}
+  if(G.mode==="tata"){
+    speak(Q.q); // v módu Pro Tátu Kalkulátor otázku předčítá
+  }else if(quipsOn&&Math.random()<.35){
+    const t=pickQuip(Math.random()<.5?"tension":"funny");bubble(t,2600);speak(t,.4);
+  }
   startQTimer();
 }
 
@@ -1647,13 +1653,13 @@ function finishReveal(ok){
   if(ok){ // správně → Kalkulátor zuří a digitálně se rozpadá
     G.score++;G.streak++;G.best=Math.max(G.best,G.streak);
     sfxOk();flash("ok");calcFace("angry");
-    const t=pickQuip("correct");bubble(t);speak(t,.55);
+    if(quipsOn){const t=pickQuip("correct");bubble(t);speak(t,G.mode==="tata"?1:.55);}
   }else{ // špatně → Kalkulátor má obrovskou radost
     G.streak=0;
     sfxBad();setTimeout(sfxBray,350);flash("bad");calcFace("happy");
     $("donkChip").classList.add("shake");
     setTimeout(()=>$("donkChip").classList.remove("shake"),600);
-    const t=pickQuip(G.mode==="osel"?"oselWrong":"wrong");bubble(t);speak(t,.55);
+    if(quipsOn){const t=pickQuip("wrong");bubble(t);speak(t,G.mode==="tata"?1:.55);}
   }
   $("scoreTxt").textContent=G.score;
   G.answered++; G.i++;
@@ -1709,8 +1715,8 @@ function onTimeout(){
   const set=G.multi?G.correctSet:[G.correct];
   set.forEach(p=>btns[p].classList.add("correct"));
   btns[set[0]].querySelector(".aemo").textContent=(G.curQ&&G.curQ.e)||CATEMOJI[G.curQ&&G.curQ.k]||"❓";
-  const t=pickQuip("timeout");
-  sfxBad();sfxBray();calcFace("happy");bubble(t);speak(t,.55);
+  sfxBad();sfxBray();calcFace("happy");
+  if(quipsOn){const t=pickQuip("timeout");bubble(t);speak(t,G.mode==="tata"?1:.55);}
   G.streak=0;G.answered++;G.i++;
   let wait=2600;
   if(G.curQ.x){wait=7500;setTimeout(()=>explainWhenQuiet(G.curQ.x),1200);}
@@ -1839,9 +1845,11 @@ function endGame(){
   if(pct>.5){ // hráč vyhrál — Kalkulátor to nese těžce
     calcFace("sad");
     $("calcsvg").classList.remove("lean");
-    const t=pickQuip("lose");bubble(t,4200);speak(t,1);
-    const chk=()=>{if(window.speechSynthesis&&speechSynthesis.speaking){setTimeout(chk,250);return;}finish();};
-    setTimeout(chk,3800);
+    if(quipsOn){
+      const t=pickQuip("lose");bubble(t,4200);speak(t,1);
+      const chk=()=>{if(window.speechSynthesis&&speechSynthesis.speaking){setTimeout(chk,250);return;}finish();};
+      setTimeout(chk,3800);
+    }else setTimeout(finish,1500);
   }else finish();
 }
 
@@ -1883,6 +1891,21 @@ function toggleVoice(){
 refreshVoiceBtns();
 $("voiceBtn").addEventListener("click",toggleVoice);
 $("voiceBtnGame").addEventListener("click",toggleVoice);
+
+/* ===== PŘEPÍNAČ HLÁŠEK (vysvětlení otázek zůstávají vždy) ===== */
+function refreshQuipBtn(){
+  $("quipBtnGame").textContent=quipsOn?"💬 Hlášky: zap":"🤐 Hlášky: vyp";
+}
+refreshQuipBtn();
+$("quipBtnGame").addEventListener("click",()=>{
+  quipsOn=!quipsOn;store.q=quipsOn;save();
+  if(!quipsOn){
+    $("bubble").classList.remove("show");
+    if(window.speechSynthesis)try{speechSynthesis.cancel()}catch(e){}
+    stopTalking();
+  }
+  refreshQuipBtn();
+});
 
 /* ===== PŘEPÍNAČ: míchat vlastní otázky do ostatních módů ===== */
 function refreshMixBtn(){
