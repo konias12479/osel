@@ -206,7 +206,7 @@
   <button class="soundtoggle" id="musicBtn">🎵 Hudba: zapnutá</button>
   <button class="soundtoggle" id="mixBtn">🔀 Moje otázky i v ostatních módech: vypnuto</button>
   <button class="soundtoggle" id="uploadBtn" style="border-color:rgba(255,207,63,.5);color:var(--neon-gold)">📂 Nahrát vlastní otázky (PDF / Word / TXT)</button>
-  <p class="tagline" style="font-size:11px;margin-top:4px">Formát: Otázka?;správná;špatná;špatná(;špatná) — více správných označ hvězdičkou: *odpověď</p>
+  <p class="tagline" style="font-size:11px;margin-top:4px">Formát: Otázka?;správná;špatná;špatná(;špatná) — více správných: *odpověď, vysvětlení na konec: ;~text</p>
   <input type="file" id="fileInput" accept=".pdf,.docx,.txt" style="display:none">
   <div class="credit">💥 Vytvořeno: <b>Petr Poslušný</b> 💥</div>
 </div>
@@ -1708,16 +1708,20 @@ document.addEventListener("keydown",e=>{
 function loadScript(src){return new Promise((res,rej)=>{
   const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("Knihovnu se nepodařilo stáhnout"));document.head.appendChild(s);});}
 function parseCustom(text,kat="Vlastní",emo="📂"){
-  const out=[],push=(q,ans)=>{
+  const out=[],push=(q,ans,x)=>{
     const corr=[],clean=[];
     ans.forEach(s=>{s=s.trim();
       if(s.startsWith("*")){corr.push(clean.length);clean.push(s.slice(1).trim());}
       else clean.push(s);});
-    out.push({q:q.trim(),a:clean,corr:corr.length?corr:[0],d:2,k:kat,e:emo});
+    const o={q:q.trim(),a:clean,corr:corr.length?corr:[0],d:2,k:kat,e:emo};
+    if(x)o.x=x;
+    out.push(o);
   };
   text.split(/\r?\n/).forEach(line=>{
     const p=line.split(/[;|]/).map(s=>s.trim()).filter(Boolean);
-    if(p.length>=4&&p[0].length>2)push(p[0],p.slice(1,p.length>=5?5:4)); // 3 nebo 4 odpovědi
+    let x=null;
+    if(p.length&&p[p.length-1].startsWith("~"))x=p.pop().slice(1).trim(); // ;~vysvětlení na konci řádku
+    if(p.length>=4&&p[0].length>2)push(p[0],p.slice(1,p.length>=5?5:4),x); // 3 nebo 4 odpovědi
   });
   if(!out.length){ // záchranné parsování pro PDF bez řádků
     const re=/([^;|]{4,}?\?)\s*[;|]\s*([^;|]+?)\s*[;|]\s*([^;|]+?)\s*[;|]\s*([^;|\n]+)/g;let m;
