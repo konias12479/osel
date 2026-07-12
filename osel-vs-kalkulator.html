@@ -102,8 +102,19 @@
 
   .calcwrap{flex:1;display:flex;align-items:center;justify-content:center;width:100%;position:relative;min-height:0;z-index:2}
   #calcsvg{height:100%;max-height:300px;filter:drop-shadow(0 0 18px rgba(0,229,255,.35));transition:transform .3s;margin-bottom:-10px}
-  #calcsvg.lean{transform:translateY(4px) rotate(-2deg) scale(1.03)}
   #headG{transition:transform 1.5s ease;transform-box:fill-box;transform-origin:50% 62%}
+  #handL,#handR{transition:transform .35s ease;transform-box:fill-box;transform-origin:70% 50%}
+  #handR{transform-origin:30% 50%}
+  #calcsvg.talking #handL{animation:gestL 1.1s ease-in-out infinite}
+  #calcsvg.talking #handR{animation:gestR 1.35s ease-in-out infinite}
+  @keyframes gestL{50%{transform:translateY(-5px) rotate(-7deg)}}
+  @keyframes gestR{50%{transform:translateY(-6px) rotate(7deg)}}
+  #calcsvg.gest-tense #handL{transform:translate(3px,-2px) scale(.9) rotate(7deg)}
+  #calcsvg.gest-tense #handR{transform:translate(-3px,-2px) scale(.9) rotate(-7deg)}
+  #calcsvg.gest-open #handL{transform:translate(-6px,-7px) rotate(-20deg)}
+  #calcsvg.gest-open #handR{transform:translate(6px,-7px) rotate(20deg)}
+  #calcsvg.tap #handR{animation:tapA .3s ease-in-out 2}
+  @keyframes tapA{50%{transform:translateY(-3.5px)}}
   #gaze{transition:transform .35s ease}
   #calcsvg.glitch{animation:glitch .45s steps(2) 3}
   @keyframes glitch{0%{transform:translate(0)}25%{transform:translate(-5px,3px) skewX(6deg);filter:hue-rotate(120deg) drop-shadow(0 0 18px rgba(255,43,214,.6))}
@@ -273,18 +284,23 @@
           </linearGradient>
           <rect x="4" y="216" width="192" height="44" rx="6" fill="url(#deskG)"/>
           <line x1="6" y1="217" x2="194" y2="217" stroke="#00e5ff" stroke-width="2" opacity=".8"/>
-          <rect x="62" y="240" width="76" height="14" rx="4" fill="#0d1126" stroke="#ffcf3f" stroke-width="1.4"/>
-          <text x="100" y="250" text-anchor="middle" fill="#ffcf3f" font-size="8.5" font-weight="bold" letter-spacing="2.5" font-family="Segoe UI, sans-serif">KALKULÁTOR</text>
           <!-- ===== PAŽE OPŘENÉ O STŮL ===== -->
           <path d="M34 204 C42 220 60 228 86 229 L86 238 C56 238 36 228 26 210 C28 204 31 202 34 204 Z" fill="#1e2447" stroke="#39406b" stroke-width="1"/>
           <path d="M166 204 C158 220 140 228 114 229 L114 238 C144 238 164 228 174 210 C172 204 169 202 166 204 Z" fill="#1e2447" stroke="#39406b" stroke-width="1"/>
           <rect x="80" y="227" width="9" height="11" rx="3" fill="#dbe9ff"/>
           <rect x="111" y="227" width="9" height="11" rx="3" fill="#dbe9ff"/>
-          <!-- sepnuté ruce -->
-          <ellipse cx="100" cy="233" rx="17" ry="8.5" fill="#e2ae80"/>
-          <ellipse cx="91" cy="229.5" rx="5" ry="3.4" fill="#e8b78a"/>
-          <ellipse cx="109" cy="229.5" rx="5" ry="3.4" fill="#e8b78a"/>
-          <path d="M90 232 Q94 235 98 232 M97 234 Q101 237 105 234 M104 232 Q108 235 112 232" stroke="#c08c5c" stroke-width="1" fill="none"/>
+          <!-- levá ruka s prsty -->
+          <g id="handL">
+            <path d="M88 227 C86 231 86 235 89 238 C95 240 102 239 104 236 C105 232 103 228 99 226 C95 225 90 225 88 227 Z" fill="#e2ae80"/>
+            <path d="M92 229 L102 228 M92 232 L103 231 M92 235 L102 234" stroke="#c08c5c" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <ellipse cx="90" cy="229" rx="2.8" ry="4" fill="#e8b78a" transform="rotate(-25 90 229)"/>
+          </g>
+          <!-- pravá ruka s prsty -->
+          <g id="handR">
+            <path d="M112 227 C114 231 114 235 111 238 C105 240 98 239 96 236 C95 232 97 228 101 226 C105 225 110 225 112 227 Z" fill="#e2ae80"/>
+            <path d="M108 229 L98 228 M108 232 L97 231 M108 235 L98 234" stroke="#c08c5c" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <ellipse cx="110" cy="229" rx="2.8" ry="4" fill="#e8b78a" transform="rotate(25 110 229)"/>
+          </g>
           <!-- krk -->
           <path d="M88 148 L88 178 Q100 184 112 178 L112 148 Z" fill="#d9a67a"/>
           <path d="M88 152 Q100 160 112 152 L112 158 Q100 164 88 158 Z" fill="#c9925f" opacity=".5"/>
@@ -1470,6 +1486,7 @@ function calcFace(mood){ // neutral(zamračený) | happy | angry | smug | shock 
 let talkInt=null,lastMood="neutral";
 function startTalking(){
   const m=$("mouth");if(!m)return;
+  $("calcsvg").classList.add("talking"); // ruce gestikulují při řeči
   clearInterval(talkInt);
   m.setAttribute("fill","#472e26");
   const shapes=["M88 125 Q100 141 112 125 Q100 130 88 125","M87 127 Q100 136 113 127 Q100 130 87 127",
@@ -1478,9 +1495,15 @@ function startTalking(){
 }
 function stopTalking(){
   clearInterval(talkInt);talkInt=null;
+  $("calcsvg").classList.remove("talking");
   const m=$("mouth");if(m)m.setAttribute("fill","none");
   calcFace(lastMood);
 }
+// občasné netrpělivé ťukání prsty o stůl
+setInterval(()=>{
+  const sv=$("calcsvg");if(!sv||sv.classList.contains("talking"))return;
+  sv.classList.add("tap");setTimeout(()=>sv.classList.remove("tap"),700);
+},6500);
 function speak(txt,chance=1){
   if(!voiceOn||!soundOn||!window.speechSynthesis||Math.random()>chance)return;
   try{
@@ -1635,7 +1658,6 @@ function renderQ(){
     }
   });
   calcFace(Math.random()<.4?"squint":"neutral");
-  $("calcsvg").classList.add("lean");
   if(G.mode==="tata"){
     speak(Q.q); // v módu Pro Tátu Kalkulátor otázku předčítá
   }else if(quipsOn&&Math.random()<.35){
@@ -1645,13 +1667,16 @@ function renderQ(){
 }
 
 function finishReveal(ok){
-  if(ok){ // správně → Kalkulátor zuří a digitálně se rozpadá
+  const sv=$("calcsvg");
+  if(ok){ // správně → Kalkulátor zuří, ruce se sevřou
     G.score++;G.streak++;G.best=Math.max(G.best,G.streak);
     sfxOk();flash("ok");calcFace("angry");
+    sv.classList.add("gest-tense");setTimeout(()=>sv.classList.remove("gest-tense"),1500);
     if(quipsOn){const t=pickQuip("correct");bubble(t);speak(t,G.mode==="tata"?1:.55);}
-  }else{ // špatně → Kalkulátor má obrovskou radost
+  }else{ // špatně → Kalkulátor má radost, rozhodí rukama
     G.streak=0;
     sfxBad();setTimeout(sfxBray,350);flash("bad");calcFace("happy");
+    sv.classList.add("gest-open");setTimeout(()=>sv.classList.remove("gest-open"),1500);
     $("donkChip").classList.add("shake");
     setTimeout(()=>$("donkChip").classList.remove("shake"),600);
     if(quipsOn){const t=pickQuip("wrong");bubble(t);speak(t,G.mode==="tata"?1:.55);}
@@ -1677,7 +1702,6 @@ function onAnswer(i){
   clearInterval(timerInt);
   btns.forEach(b=>b.disabled=true);
   btns[i].classList.add("locked"); sfxLock();
-  $("calcsvg").classList.remove("lean");
   setTimeout(()=>{
     const ok=i===G.correct;
     btns[G.correct].classList.add("correct");
@@ -1693,7 +1717,6 @@ function confirmMulti(){
   $("confirmBtn").style.display="none";
   const btns=document.querySelectorAll(".ans");
   btns.forEach(b=>b.disabled=true);
-  $("calcsvg").classList.remove("lean");
   setTimeout(()=>{
     const ok=G.correctSet.length===G.sel.size&&G.correctSet.every(p=>G.sel.has(p));
     G.correctSet.forEach(p=>btns[p].classList.add("correct"));
