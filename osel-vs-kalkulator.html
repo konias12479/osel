@@ -1882,16 +1882,28 @@ function currentTrack(){ // menu a výsledky = initial, hra = hra.mp3, Moje otá
     return G.mode==="vlastni"?vlastniAudio:hraAudio;
   return bgAudio;
 }
-function tryMusic(){
+function showEnterOverlay(){ // prohlížeč blokuje zvuk do prvního kliknutí → uvítací brána
+  if(document.getElementById("enterOv"))return;
+  const d=document.createElement("div");
+  d.id="enterOv";
+  d.style.cssText="position:fixed;inset:0;z-index:999;background:rgba(8,8,26,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px";
+  d.innerHTML='<div style="font-size:54px">🧮</div>'+
+    '<div style="font-weight:900;font-size:22px;text-align:center;background:linear-gradient(90deg,#00e5ff,#ff2bd6);-webkit-background-clip:text;background-clip:text;color:transparent">POMSTA KALKULÁTORA</div>'+
+    '<button id="enterBtn" style="background:linear-gradient(90deg,#ffcf3f,#ffb03f);border:none;border-radius:26px;padding:16px 34px;font-family:inherit;font-weight:900;font-size:17px;color:#221a00;cursor:pointer;box-shadow:0 0 24px rgba(255,207,63,.6)">▶ VSTOUPIT DO STUDIA</button>';
+  document.body.appendChild(d);
+  d.addEventListener("click",()=>{d.remove();tryMusic();});
+}
+function tryMusic(first){
   if(!musicWanted)return;
   const want=currentTrack();
   ALL_TRACKS.forEach(a=>{if(a!==want&&!a.paused)a.pause();});
   if(want.paused){
     if(want===bgAudio&&bgAudio.currentTime<BGM_START)try{bgAudio.currentTime=BGM_START}catch(e){}
-    want.play().then(()=>{$("musicBtn").textContent="🎵 Hudba: hraje";}).catch(()=>{});
+    want.play().then(()=>{$("musicBtn").textContent="🎵 Hudba: hraje";})
+      .catch(()=>{if(first===true)showEnterOverlay();});
   }
 }
-tryMusic(); // pokus hned; prohlížeč zvuk povolí nejpozději po prvním kliknutí
+tryMusic(true); // pokus hned; při blokaci se ukáže brána „Vstoupit do studia“
 document.addEventListener("click",tryMusic);
 $("musicBtn").addEventListener("click",e=>{
   e.stopPropagation();
