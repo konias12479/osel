@@ -1866,15 +1866,15 @@ $("mixBtn").addEventListener("click",()=>{
 });
 
 /* ===== HUDBA: initial.mp3 (od 13 s) + vlastni-otazky.mp3 v módu Moje otázky ===== */
-const BGM_START=13; // úvod skladby je skoro neslyšet
+const BGM_START=23; // přeskočení tichého úvodu skladby
 let bgAudio=new Audio("initial.mp3");
-bgAudio.volume=0.06; // velmi tichý podkres
+bgAudio.volume=0.084; // tichý podkres (+40 %)
 bgAudio.addEventListener("loadedmetadata",()=>{try{bgAudio.currentTime=BGM_START}catch(e){}});
 bgAudio.addEventListener("ended",()=>{bgAudio.currentTime=BGM_START;bgAudio.play().catch(()=>{});}); // smyčka od 13 s
 let vlastniAudio=new Audio("vlastni-otazky.mp3"); // hudba jen pro mód Moje otázky
-vlastniAudio.volume=0.06;vlastniAudio.loop=true;
+vlastniAudio.volume=0.084;vlastniAudio.loop=true;
 let hraAudio=new Audio("hra.mp3"); // hudba během hraní (ostatní módy)
-hraAudio.volume=0.06;hraAudio.loop=true;
+hraAudio.volume=0.084;hraAudio.loop=true;
 let musicWanted=true;
 const ALL_TRACKS=[bgAudio,vlastniAudio,hraAudio];
 function currentTrack(){ // menu a výsledky = initial, hra = hra.mp3, Moje otázky = vlastní
