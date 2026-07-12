@@ -1872,9 +1872,9 @@ bgAudio.volume=0.17; // podkres (zdvojnásobeno)
 bgAudio.addEventListener("loadedmetadata",()=>{try{bgAudio.currentTime=BGM_START}catch(e){}});
 bgAudio.addEventListener("ended",()=>{bgAudio.currentTime=BGM_START;bgAudio.play().catch(()=>{});}); // smyčka od 13 s
 let vlastniAudio=new Audio("vlastni-otazky.mp3"); // hudba jen pro mód Moje otázky
-vlastniAudio.volume=0.17;vlastniAudio.loop=true;
+vlastniAudio.volume=0.12;vlastniAudio.loop=true; // při hře o 30 % tišší
 let hraAudio=new Audio("hra.mp3"); // hudba během hraní (ostatní módy)
-hraAudio.volume=0.17;hraAudio.loop=true;
+hraAudio.volume=0.12;hraAudio.loop=true; // při hře o 30 % tišší
 let musicWanted=true;
 const ALL_TRACKS=[bgAudio,vlastniAudio,hraAudio];
 function currentTrack(){ // menu a výsledky = initial, hra = hra.mp3, Moje otázky = vlastní
