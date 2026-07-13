@@ -1443,7 +1443,8 @@ const sfxFanfare=()=>{[523,659,784,1047].forEach((f,i)=>tone(f,.22,"triangle",.1
 let store={xp:0};
 try{ const s=localStorage.getItem("ovk_save"); if(s) store=JSON.parse(s);}catch(e){}
 function save(){ try{localStorage.setItem("ovk_save",JSON.stringify(store))}catch(e){} }
-let voiceOn=store.voice!==false; // hlas Kalkulátora
+const IS_MOBILE=/Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Mac/.test(navigator.userAgent));
+let voiceOn=(store.voice!==undefined)?store.voice!==false:!IS_MOBILE; // na mobilech je hlas ve výchozím stavu vypnutý (bývá tam jen ženský)
 let mixCustom=store.mix===true; // míchat vlastní otázky do ostatních módů (výchozí: ne)
 let quipsOn=store.q!==false; // hlášky Kalkulátora (vysvětlení otázek zůstávají vždy)
 
@@ -1515,7 +1516,8 @@ function speak(txt,chance=1){
     const u=new SpeechSynthesisUtterance(t);
     u.lang="cs-CZ";u.rate=0.94;u.pitch=0.8;u.volume=.95; // hlubší, volnější recitátorský přednes
     const voices=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith("cs"));
-    const v=voices.find(v=>/natural|neural|premium|enhanced|google/i.test(v.name))||voices[0];
+    const v=voices.find(v=>/anton|jakub|ondrej|ondřej|adam|male|muž/i.test(v.name)) // přednostně mužský hlas, pokud existuje
+          ||voices.find(v=>/natural|neural|premium|enhanced|google/i.test(v.name))||voices[0];
     if(v)u.voice=v;
     u.onstart=startTalking;
     u.onend=stopTalking;u.onerror=stopTalking;
