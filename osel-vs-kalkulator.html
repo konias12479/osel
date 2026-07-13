@@ -148,10 +148,10 @@
   .qmeta{display:flex;justify-content:space-between;font-size:11.5px;color:#9c94d8;text-transform:uppercase;letter-spacing:1px}
   .timebar{height:6px;background:#0d0b26;border-radius:4px;overflow:hidden}
   .timebar div{height:100%;width:100%;background:linear-gradient(90deg,#2eff8a,#ffcf3f,#ff4d6d);transition:width 1s linear}
-  .qtext{font-size:clamp(15px,4.3vw,19px);font-weight:800;text-align:center;min-height:48px;
+  .qtext{font-size:clamp(14px,4vw,19px);font-weight:800;text-align:center;min-height:34px;flex-shrink:0;max-height:26vh;overflow-y:auto;
     display:flex;align-items:center;justify-content:center;line-height:1.3;
     text-shadow:0 0 14px rgba(0,229,255,.4)}
-  .answers{display:grid;gap:8px;overflow-y:auto;min-height:0}
+  .answers{display:grid;gap:8px;overflow-y:auto;min-height:0;flex:1;align-content:start}
   .ans{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#221c56,#2b2470);
     border:1.5px solid rgba(0,229,255,.4);border-radius:12px;padding:9px 12px;color:var(--text);
     font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-align:left;line-height:1.25;
@@ -168,7 +168,7 @@
   .ans.wrong .letter{background:var(--bad)}
   .ans.hidden5050{opacity:.18;pointer-events:none}
   .ans:disabled{cursor:default}
-  .jokerrow{display:flex;justify-content:center;gap:10px;margin-top:2px}
+  .jokerrow{display:flex;justify-content:center;gap:10px;margin-top:2px;flex-shrink:0;flex-wrap:wrap}
   .joker{background:none;border:1px dashed rgba(255,207,63,.6);color:var(--neon-gold);
     border-radius:20px;padding:5px 14px;font-family:inherit;font-size:12.5px;cursor:pointer}
   .joker:disabled{opacity:.3;border-style:solid;cursor:default}
